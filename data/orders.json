@@ -1,0 +1,158 @@
+[
+  {
+    "id": "TT-416216A6227B31E6",
+    "customer": {
+      "name": "Meyirzhan Elemes",
+      "phone": "+77777777777",
+      "address": "tole bi 56"
+    },
+    "items": [
+      {
+        "id": "dadiani-khinkali",
+        "name": "Beef Khinkali",
+        "restaurant": "Dadiani",
+        "restaurantId": "dadiani",
+        "price": 5270,
+        "quantity": 2
+      }
+    ],
+    "subtotal": 10540,
+    "deliveryFee": 700,
+    "total": 11240,
+    "status": "Delivered",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "at": "2026-11-10T12:21:37.297Z"
+      },
+      {
+        "status": "Preparing",
+        "at": "2026-11-10T12:21:52.129Z"
+      },
+      {
+        "status": "Ready for pickup",
+        "at": "2026-11-10T12:21:53.826Z"
+      },
+      {
+        "status": "On the way",
+        "at": "2026-11-10T12:22:15.767Z"
+      },
+      {
+        "status": "Delivered",
+        "at": "2026-11-10T12:22:27.204Z"
+      }
+    ],
+    "createdAt": "2026-11-10T12:21:37.298Z",
+    "courierId": "courier-demo",
+    "courierName": "Arman S."
+  },
+  {
+    "id": "TT-DB019F",
+    "customer": {
+      "name": "Meyirzhan Elemes",
+      "phone": "+77777777777",
+      "address": "tole bi 56"
+    },
+    "items": [
+      {
+        "id": "plov",
+        "name": "Almaty Plov",
+        "restaurant": "Dastarkhan Kitchen",
+        "price": 2600,
+        "quantity": 2
+      },
+      {
+        "id": "burger",
+        "name": "Green Garden Burger",
+        "restaurant": "Bun & Co.",
+        "price": 2900,
+        "quantity": 1
+      },
+      {
+        "id": "pizza",
+        "name": "Margherita Pizza",
+        "restaurant": "Forno Verde",
+        "price": 3400,
+        "quantity": 1
+      }
+    ],
+    "subtotal": 11500,
+    "deliveryFee": 700,
+    "total": 12200,
+    "status": "Delivered",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "at": "2026-11-10T12:04:15.245Z"
+      },
+      {
+        "status": "Preparing",
+        "at": "2026-11-10T12:04:21.775Z"
+      },
+      {
+        "status": "Ready for pickup",
+        "at": "2026-11-10T12:04:22.700Z"
+      },
+      {
+        "status": "On the way",
+        "at": "2026-11-10T12:04:24.214Z"
+      },
+      {
+        "status": "Delivered",
+        "at": "2026-11-10T12:04:28.079Z"
+      }
+    ],
+    "createdAt": "2026-11-10T12:04:15.245Z"
+  },
+  {
+    "id": "TT-2308EF",
+    "customer": {
+      "name": "Meyirzhan Elemes",
+      "phone": "+77777777777",
+      "address": "tole bi 56"
+    },
+    "items": [
+      {
+        "id": "beshbarmak",
+        "name": "Beshbarmak",
+        "restaurant": "Dastarkhan Kitchen",
+        "price": 3200,
+        "quantity": 1
+      },
+      {
+        "id": "plov",
+        "name": "Almaty Plov",
+        "restaurant": "Dastarkhan Kitchen",
+        "price": 2600,
+        "quantity": 1
+      }
+    ],
+    "subtotal": 5800,
+    "deliveryFee": 700,
+    "total": 6500,
+    "status": "Delivered",
+    "statusHistory": [
+      {
+        "status": "Received",
+        "at": "2026-11-10T12:00:30.871Z"
+      },
+      {
+        "status": "Preparing",
+        "at": "2026-11-10T12:00:53.405Z"
+      },
+      {
+        "status": "Ready for pickup",
+        "at": "2026-11-10T12:00:55.036Z"
+      },
+      {
+        "status": "On the way",
+        "at": "2026-11-10T12:00:57.627Z"
+      },
+      {
+        "status": "Delivered",
+        "at": "2026-11-10T12:03:58.163Z"
+      }
+    ],
+    "createdAt": "2026-11-10T12:00:30.871Z"
+  }
+]

@@ -1,0 +1,6 @@
+.env
+.postgres-data/
+node_modules/
+db/teztagam_dump.sql
+db/start-db.ps1
+db/stop-db.ps1

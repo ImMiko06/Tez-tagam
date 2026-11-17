@@ -1,0 +1,16 @@
+{
+  "name": "tez-tagam",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tez Tagam food delivery system course project",
+  "scripts": {
+    "start": "node server.js",
+    "db:start": "powershell -NoProfile -ExecutionPolicy Bypass -File db/start-db.ps1",
+    "db:stop": "powershell -NoProfile -ExecutionPolicy Bypass -File db/stop-db.ps1"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "pg": "^8.23.1"
+  }
+}

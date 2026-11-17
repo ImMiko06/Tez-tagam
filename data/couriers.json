@@ -1,0 +1,9 @@
+[
+  {
+    "id": "courier-demo",
+    "name": "Arman S.",
+    "email": "courier@teztagam.kz",
+    "salt": "9860f319525b59c2504aa695831dd470",
+    "passwordHash": "f568e9d30f1e401f57de4a59fd129e93e485dd9d941321f79071e209e2869c8cef951c3bf260097e4b75505bbccccff5e4d7e5d21ce6202afa8a7427cb15bcfe"
+  }
+]

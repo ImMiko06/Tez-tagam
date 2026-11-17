@@ -1,0 +1,8 @@
+node_modules/
+.env
+.env.*
+!.env.example
+*.log
+.postgres-data/
+db/teztagam_dump.sql
+.vercel/

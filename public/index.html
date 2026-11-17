@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#f7f5ef" />
+  <meta name="description" content="Tez Tagam — доставка еды по Алматы." />
+  <title>Tez Tagam — доставка еды в Алматы</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#top" aria-label="Главная Tez Tagam"><span class="brand-mark">T</span><span>tez<span class="brand-accent">tagam</span></span></a>
+    <div class="delivery"><span class="pin">⌖</span><span><small>Доставка</small><strong>Алматы</strong></span><span class="chevron">⌄</span></div>
+    <div class="top-actions"><button class="icon-button" id="search-focus" aria-label="Найти блюдо">⌕</button><button class="track-button" id="track-order">Статус заказа</button><button class="track-button" id="account-open">Войти / Регистрация</button><a class="courier-link" href="courier.html">Войти курьеру ↗</a><button class="cart-button" id="open-cart"><span>🛍</span> Корзина <b id="cart-count">0</b></button></div>
+  </header>
+  <main id="top">
+    <section class="hero">
+      <div class="hero-copy"><div class="eyebrow"><span class="live-dot"></span> ВКУСНАЯ ЕДА ВОВРЕМЯ</div><h1>Вкусная еда<br/><em>уже в пути.</em></h1><p>Любимые блюда и рестораны Алматы — с доставкой до двери.</p><label class="search-box"><span>⌕</span><input id="search" type="search" placeholder="Найти блюдо или ресторан" aria-label="Найти блюдо или ресторан" /><kbd>/</kbd></label><div class="hero-meta"><span>⚡ Доставка за 25–45 минут</span><span>✦ Готовим перед отправкой</span></div></div>
+      <div class="hero-art" aria-label="Иллюстрация блюда"><div class="sun"></div><div class="food-orbit orbit-one">✦</div><div class="food-orbit orbit-two">✳</div><div class="bowl"><div class="bowl-rim"><div class="rice"></div><span class="garnish g1">●</span><span class="garnish g2">●</span><span class="garnish g3">◆</span><span class="garnish g4">●</span><span class="garnish g5">◆</span><span class="herb">✿</span></div><div class="bowl-base"></div></div><div class="hero-sticker"><span>✦</span><b>Готовим<br/>для вас</b></div></div>
+    </section>
+    <section class="restaurant-section" id="restaurants"><div class="section-head"><div><div class="eyebrow muted">ВКУС АЛМАТЫ</div><h2>Популярные рестораны</h2><p class="section-subtitle">Известные кухни и любимые блюда города.</p></div><a href="#menu-grid" class="see-all">Смотреть меню <span>→</span></a></div><div class="restaurant-grid" id="restaurant-grid"></div></section>    <section class="menu-section" id="menu"><div class="section-head"><div><div class="eyebrow muted">ВЫБЕРИТЕ ЛЮБИМОЕ</div><h2>Что будем заказывать?</h2></div><a href="#menu-grid" class="see-all">Все блюда <span>→</span></a></div>
+      <nav class="categories" id="categories" aria-label="Категории блюд"></nav>
+      <div class="results-line"><span><span id="result-count"></span><button id="clear-restaurant" class="clear-filter" hidden>Сбросить фильтр ресторана ×</button></span><span class="sort-label">Популярные блюда</span></div>
+      <div class="menu-grid" id="menu-grid"></div>
+    </section>
+    <section class="promise"><div class="promise-icon">✳</div><div><strong>Вкусно и просто.</strong><span>Блюда готовятся перед отправкой и приезжают бережно.</span></div><span class="promise-arrow">↗</span></section>
+  </main>
+  <footer><a class="brand footer-brand" href="#top"><span class="brand-mark">T</span><span>tez<span class="brand-accent">tagam</span></span></a><span>Вкусная еда — вовремя.</span><a class="kitchen-link" href="kitchen.html">Кабинет ресторана ↗</a><span>© 2026 Tez Tagam</span></footer>
+  <div class="scrim" id="scrim"></div>
+  <aside class="cart-drawer" id="cart-drawer" aria-label="Корзина" aria-hidden="true"><div class="drawer-head"><div><span class="eyebrow muted">ВАШ ЗАКАЗ</span><h2>Корзина</h2></div><button class="close-button" id="close-cart" aria-label="Закрыть корзину">×</button></div><div class="cart-items" id="cart-items"></div><div class="empty-cart" id="empty-cart"><div>🛍</div><strong>Корзина пока пуста</strong><span>Добавьте блюдо из меню.</span></div><div class="checkout" id="checkout"><div class="subtotal"><span>Подытог</span><strong id="subtotal">₸0</strong></div><div class="delivery-fee"><span>Доставка</span><span>₸700</span></div><div class="total"><span>Итого</span><strong id="total">₸700</strong></div><button class="checkout-button" id="checkout-button">Перейти к оформлению <span>→</span></button><small>Стоимость доставки рассчитана для Алматы</small></div></aside>
+  <dialog id="account-dialog"><div class="track-form-wrap account-wrap"><button type="button" class="close-button dialog-close" id="account-close" aria-label="Закрыть">×</button><div id="account-guest"><div class="eyebrow muted">АККАУНТ TEZ TAGAM</div><h2 id="account-title">Регистрация покупателя</h2><div class="account-switch"><button type="button" class="category active" id="show-register">Регистрация</button><button type="button" class="category" id="show-login">Войти</button></div><form id="register-form"><label>Имя и фамилия<input name="name" autocomplete="name" required minlength="2" /></label><label>Электронная почта<input name="email" type="email" autocomplete="email" required /></label><label>Номер телефона<input name="phone" type="tel" autocomplete="tel" required placeholder="+7 700 000 00 00" /></label><label>Пароль<input name="password" type="password" autocomplete="new-password" required minlength="8" /></label><p class="form-error" id="register-error" role="alert"></p><button class="checkout-button" type="submit">Создать аккаунт <span>→</span></button></form><form id="login-form" hidden><label>Электронная почта<input name="email" type="email" autocomplete="email" required /></label><label>Пароль<input name="password" type="password" autocomplete="current-password" required /></label><p class="form-error" id="login-error" role="alert"></p><button class="checkout-button" type="submit">Войти <span>→</span></button></form></div><div id="account-member" hidden><div class="eyebrow muted">МОЙ ПРОФИЛЬ</div><h2>Здравствуйте, <span id="account-name"></span></h2><p class="account-id">ID покупателя: <strong id="account-id"></strong></p><p id="account-email"></p><p id="account-phone"></p><h3>Мои заказы</h3><div id="account-orders"></div><button type="button" class="logout-button" id="account-logout">Выйти</button></div></div></dialog><dialog id="order-dialog"><form id="checkout-form" class="order-form"><button type="button" class="close-button dialog-close" id="close-order" aria-label="Закрыть">×</button><div class="success-icon">✓</div><div class="eyebrow muted">ПОСЛЕДНИЙ ШАГ</div><h2>Куда доставить заказ?</h2><p>Укажите данные для доставки.</p><label>Ваше имя<input name="name" autocomplete="name" required placeholder="Имя и фамилия" /></label><label>Номер телефона<input name="phone" type="tel" autocomplete="tel" required placeholder="+7 700 000 00 00" /></label><label>Адрес доставки<input name="address" autocomplete="street-address" required placeholder="Улица, дом, квартира" /></label><p class="form-error" id="checkout-error" role="alert"></p><button class="checkout-button" id="place-order" type="submit">Оформить заказ <span>→</span></button><small>Оплата наличными при получении</small></form></dialog><dialog id="track-dialog"><div class="track-form-wrap"><button type="button" class="close-button dialog-close" id="close-track" aria-label="Закрыть">×</button><div class="eyebrow muted">ОБНОВЛЕНИЕ ЗАКАЗА</div><h2>Статус заказа</h2><form id="track-form"><label for="track-id">Номер заказа</label><div class="track-search" id="track-search"><input id="track-id" placeholder="Например TT-A1B2C3" required /><button class="checkout-button" type="submit">Найти заказ →</button></div><p class="form-error" id="track-error" role="alert"></p></form><div id="tracking-result" hidden></div></div></dialog>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+
+
+
