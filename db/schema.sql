@@ -44,6 +44,13 @@ CREATE TABLE IF NOT EXISTS customers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS login_attempts (
+  email TEXT PRIMARY KEY,
+  attempt_count INTEGER NOT NULL DEFAULT 0,
+  window_started_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  locked_until TIMESTAMPTZ
+);
+
 CREATE TABLE IF NOT EXISTS orders (
   id TEXT PRIMARY KEY,
   customer_name TEXT NOT NULL,

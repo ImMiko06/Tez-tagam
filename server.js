@@ -29,7 +29,7 @@ function sessionSecret() {
   return process.env.PGPASSWORD || 'tez-tagam-local-development-secret-change-before-deploy';
 }
 function createToken(subject, role) {
-  const payload = Buffer.from(JSON.stringify({sub:subject,role,exp:Math.floor(Date.now()/1000)+7*24*60*60})).toString('base64url');
+  const payload = Buffer.from(JSON.stringify({sub:subject,role,exp:Math.floor(Date.now()/1000)+60*60})).toString('base64url');
   const signature = crypto.createHmac('sha256',sessionSecret()).update(payload).digest('base64url');
   return `${payload}.${signature}`;
 }
@@ -73,8 +73,8 @@ app.use(async (req, res) => {
       const name = clean(body.name,100);
       const email = clean(body.email,160).toLowerCase();
       const phone = clean(body.phone,32);
-      if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phone.length < 7 || typeof body.password !== 'string' || body.password.length < 8) {
-        return send(res,400,{error:'Укажите имя, корректную почту, телефон и пароль не короче 8 символов.'});
+      if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phone.length < 7 || typeof body.password !== 'string' || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(body.password)) {
+        return send(res,400,{error:'Укажите имя, корректную почту, телефон и пароль от 8 символов: нужны строчная и заглавная латинские буквы и цифра.'});
       }
       const salt = crypto.randomBytes(16).toString('hex');
       // The server assigns customer IDs; the browser never chooses primary keys.
@@ -91,11 +91,21 @@ app.use(async (req, res) => {
 
     if (req.method === 'POST' && pathname === '/api/users/login') {
       const body = await readBody(req);
-      const customer = await db.findCustomerByEmail(clean(body.email,160).toLowerCase());
-      if (!customer || typeof body.password !== 'string') return send(res,401,{error:'Неверная почта или пароль.'});
+      const email = clean(body.email,160).toLowerCase();
+      const lock = await db.getLoginLock(email);
+      if (lock?.locked_until && new Date(lock.locked_until).getTime() > Date.now()) return send(res,429,{error:'Слишком много попыток. Попробуйте снова через 15 минут.'});
+      const customer = await db.findCustomerByEmail(email);
+      if (!customer || typeof body.password !== 'string') {
+        const failed = await db.recordLoginFailure(email);
+        return send(res,failed.locked_until?429:401,{error:failed.locked_until?'Слишком много попыток. Попробуйте снова через 15 минут.':'Неверная почта или пароль.'});
+      }
       const candidate = crypto.scryptSync(body.password,customer.salt,64);
       const expected = Buffer.from(customer.passwordHash,'hex');
-      if (candidate.length !== expected.length || !crypto.timingSafeEqual(candidate,expected)) return send(res,401,{error:'Неверная почта или пароль.'});
+      if (candidate.length !== expected.length || !crypto.timingSafeEqual(candidate,expected)) {
+        const failed = await db.recordLoginFailure(email);
+        return send(res,failed.locked_until?429:401,{error:failed.locked_until?'Слишком много попыток. Попробуйте снова через 15 минут.':'Неверная почта или пароль.'});
+      }
+      await db.clearLoginFailures(email);
       const token = createToken(customer.id,'customer');
       return send(res,200,{token,customer:{id:customer.id,name:customer.name,email:customer.email,phone:customer.phone,createdAt:customer.createdAt}});
     }
@@ -133,11 +143,21 @@ app.use(async (req, res) => {
 
     if (req.method === 'POST' && pathname === '/api/courier/login') {
       const body = await readBody(req);
-      const courier = couriers.find((x) => x.email.toLowerCase() === clean(body.email,160).toLowerCase());
-      if (!courier || typeof body.password !== 'string') return send(res, 401, {error:'Неверная почта или пароль.'});
+      const email = clean(body.email,160).toLowerCase();
+      const lock = await db.getLoginLock(email);
+      if (lock?.locked_until && new Date(lock.locked_until).getTime() > Date.now()) return send(res,429,{error:'Слишком много попыток. Попробуйте снова через 15 минут.'});
+      const courier = couriers.find((x) => x.email.toLowerCase() === email);
+      if (!courier || typeof body.password !== 'string') {
+        const failed = await db.recordLoginFailure(email);
+        return send(res,failed.locked_until?429:401,{error:failed.locked_until?'Слишком много попыток. Попробуйте снова через 15 минут.':'Неверная почта или пароль.'});
+      }
       const candidate = crypto.scryptSync(body.password,courier.salt,64);
       const expected = Buffer.from(courier.passwordHash,'hex');
-      if (candidate.length !== expected.length || !crypto.timingSafeEqual(candidate,expected)) return send(res, 401, {error:'Неверная почта или пароль.'});
+      if (candidate.length !== expected.length || !crypto.timingSafeEqual(candidate,expected)) {
+        const failed = await db.recordLoginFailure(email);
+        return send(res,failed.locked_until?429:401,{error:failed.locked_until?'Слишком много попыток. Попробуйте снова через 15 минут.':'Неверная почта или пароль.'});
+      }
+      await db.clearLoginFailures(email);
       const token = createToken(courier.id,'courier');
       return send(res,200,{token,courier:{id:courier.id,name:courier.name,email:courier.email}});
     }

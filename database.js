@@ -177,6 +177,21 @@ async function getCustomerOrders(id) {
   const result = await pool.query('SELECT id FROM orders WHERE customer_id=$1 ORDER BY created_at DESC',[id]);
   return Promise.all(result.rows.map((x) => loadOrder(x.id)));
 }
+async function getLoginLock(email) {
+  const result = await pool.query('SELECT attempt_count, window_started_at, locked_until FROM login_attempts WHERE email=$1',[email]);
+  return result.rows[0] || null;
+}
+async function recordLoginFailure(email) {
+  const result = await pool.query(
+    `INSERT INTO login_attempts(email,attempt_count,window_started_at,locked_until) VALUES ($1,1,NOW(),NULL)
+     ON CONFLICT(email) DO UPDATE SET
+       attempt_count=CASE WHEN login_attempts.window_started_at < NOW()-INTERVAL '15 minutes' THEN 1 ELSE login_attempts.attempt_count+1 END,
+       window_started_at=CASE WHEN login_attempts.window_started_at < NOW()-INTERVAL '15 minutes' THEN NOW() ELSE login_attempts.window_started_at END,
+       locked_until=CASE WHEN (CASE WHEN login_attempts.window_started_at < NOW()-INTERVAL '15 minutes' THEN 1 ELSE login_attempts.attempt_count+1 END)>=5 THEN NOW()+INTERVAL '15 minutes' ELSE NULL END
+     RETURNING attempt_count,locked_until`,[email]);
+  return result.rows[0];
+}
+async function clearLoginFailures(email) { await pool.query('DELETE FROM login_attempts WHERE email=$1',[email]); }
 async function getCatalog() {
   const [restaurants,dishes] = await Promise.all([
     pool.query('SELECT * FROM restaurants ORDER BY name'),
@@ -185,4 +200,4 @@ async function getCatalog() {
   return { restaurants: restaurants.rows, dishes: dishes.rows };
 }
 
-module.exports = { pool, initialize, getCatalog, listCouriers, createCustomer, findCustomerByEmail, getCustomer, getCustomerOrders, getOrders, getOrder, createOrder, updateStatus, claimOrder };
+module.exports = { pool, initialize, getCatalog, listCouriers, createCustomer, findCustomerByEmail, getCustomer, getCustomerOrders, getLoginLock, recordLoginFailure, clearLoginFailures, getOrders, getOrder, createOrder, updateStatus, claimOrder };
