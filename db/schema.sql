@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS orders (
   customer_name TEXT NOT NULL,
   customer_phone TEXT NOT NULL,
   customer_address TEXT NOT NULL,
+  delivery_lat DOUBLE PRECISION,
+  delivery_lng DOUBLE PRECISION,
   subtotal INTEGER NOT NULL CHECK (subtotal >= 0),
   delivery_fee INTEGER NOT NULL CHECK (delivery_fee >= 0),
   total INTEGER NOT NULL CHECK (total >= 0),
@@ -70,6 +72,8 @@ CREATE TABLE IF NOT EXISTS orders (
 );
 
 ALTER TABLE orders ADD COLUMN IF NOT EXISTS customer_id TEXT REFERENCES customers(id) ON DELETE SET NULL;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_lat DOUBLE PRECISION;
+ALTER TABLE orders ADD COLUMN IF NOT EXISTS delivery_lng DOUBLE PRECISION;
 CREATE INDEX IF NOT EXISTS orders_customer_idx ON orders(customer_id, created_at DESC);
 
 CREATE TABLE IF NOT EXISTS order_items (

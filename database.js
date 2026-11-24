@@ -38,9 +38,10 @@ async function withTransaction(work) {
 
 async function saveOrder(client, order) {
   const inserted = await client.query(
-    `INSERT INTO orders (id, customer_name, customer_phone, customer_address, subtotal, delivery_fee, total, status, customer_id, courier_id, courier_name, created_at)
-     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) ON CONFLICT (id) DO NOTHING RETURNING id`,
-    [order.id, order.customer.name, order.customer.phone, order.customer.address, order.subtotal,
+    `INSERT INTO orders (id, customer_name, customer_phone, customer_address, delivery_lat, delivery_lng, subtotal, delivery_fee, total, status, customer_id, courier_id, courier_name, created_at)
+     VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) ON CONFLICT (id) DO NOTHING RETURNING id`,
+    [order.id, order.customer.name, order.customer.phone, order.customer.address,
+      order.deliveryLocation?.lat ?? null, order.deliveryLocation?.lng ?? null, order.subtotal,
       order.deliveryFee, order.total, order.status, order.customerId || null, order.courierId || null, order.courierName || null, order.createdAt]
   );
   if (!inserted.rowCount) return;
@@ -115,6 +116,7 @@ async function loadOrder(id, executor = pool) {
     id: row.id,
     customerId: row.customer_id || undefined,
     customer: { name: row.customer_name, phone: row.customer_phone, address: row.customer_address },
+    deliveryLocation: row.delivery_lat != null && row.delivery_lng != null ? {lat:Number(row.delivery_lat),lng:Number(row.delivery_lng)} : undefined,
     items: items.rows.map((x) => ({ id: x.dish_id, name: x.dish_name, restaurantId: x.restaurant_id, restaurant: x.restaurant_name, price: x.price, quantity: x.quantity })),
     subtotal: row.subtotal, deliveryFee: row.delivery_fee, total: row.total, status: row.status,
     statusHistory: history.rows.map((x) => ({ status: x.status, at: x.changed_at.toISOString() })),

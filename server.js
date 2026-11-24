@@ -148,8 +148,10 @@ app.use(async (req, res) => {
     if (req.method === 'POST' && pathname === '/api/orders') {
       const body = await readBody(req);
       const customer = {name:clean(body.customer?.name,80), phone:clean(body.customer?.phone,32), address:clean(body.customer?.address,240)};
+      const lat=body.deliveryLocation?.lat,lng=body.deliveryLocation?.lng;
       const customerId = currentCustomer(req);
       if (!customer.name || !customer.phone || !customer.address) return send(res, 400, {error:'Укажите имя, телефон и адрес доставки.'});
+      if (typeof lat !== 'number' || typeof lng !== 'number' || !Number.isFinite(lat) || !Number.isFinite(lng) || lat < 42.9 || lat > 43.55 || lng < 76.45 || lng > 77.45) return send(res,400,{error:'Выберите точку доставки в зоне Алматы на карте.'});
       if (!Array.isArray(body.items) || body.items.length < 1 || body.items.length > 30) return send(res, 400, {error:'Корзина пуста или содержит ошибку.'});
       const lines = [];
       for (const raw of body.items) {
@@ -160,7 +162,7 @@ app.use(async (req, res) => {
       }
       const subtotal = lines.reduce((sum, x) => sum + x.price * x.quantity, 0);
       const now = new Date().toISOString();
-      const order = {id:`TT-${crypto.randomBytes(8).toString('hex').toUpperCase()}`, customer, customerId, items:lines, subtotal, deliveryFee:700,
+      const order = {id:`TT-${crypto.randomBytes(8).toString('hex').toUpperCase()}`, customer, customerId, deliveryLocation:{lat,lng}, items:lines, subtotal, deliveryFee:700,
         total:subtotal + 700, status:'Received', statusHistory:[{status:'Received',at:now}], createdAt:now};
       return send(res, 201, {order:await db.createOrder(order)});
     }
