@@ -73,7 +73,8 @@ app.use(async (req, res) => {
       const name = clean(body.name,100);
       const email = clean(body.email,160).toLowerCase();
       const phone = clean(body.phone,32);
-      if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phone.length < 7 || typeof body.password !== 'string' || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(body.password)) {
+      const phoneDigits=phone.replace(/\D/g,'');
+      if (name.length < 2 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || phoneDigits.length < 10 || phoneDigits.length > 15 || typeof body.password !== 'string' || !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(body.password)) {
         return send(res,400,{error:'Укажите имя, корректную почту, телефон и пароль от 8 символов: нужны строчная и заглавная латинские буквы и цифра.'});
       }
       const salt = crypto.randomBytes(16).toString('hex');
@@ -84,7 +85,8 @@ app.use(async (req, res) => {
         const token = createToken(saved.id,'customer');
         return send(res,201,{token,customer:saved});
       } catch (error) {
-        if (error.code === '23505') return send(res,409,{error:'Пользователь с такой электронной почтой уже зарегистрирован.'});
+        if (error.code === '23505' && error.constraint === 'customers_phone_digits_unique_idx') return send(res,409,{error:'Аккаунт с таким номером телефона уже зарегистрирован.'});
+        if (error.code === '23505') return send(res,409,{error:'Покупатель с такой электронной почтой уже зарегистрирован.'});
         throw error;
       }
     }
@@ -113,6 +115,28 @@ app.use(async (req, res) => {
     if (pathname.startsWith('/api/users/')) {
       const customerId = currentCustomer(req);
       if (!customerId) return send(res,401,{error:'Войдите в аккаунт покупателя.'});
+      if (req.method === 'POST' && pathname === '/api/users/password') {
+        const body = await readBody(req);
+        const currentPassword=body.currentPassword;
+        const newPassword=body.newPassword;
+        if (typeof currentPassword !== 'string' || typeof newPassword !== 'string' || newPassword !== body.confirmPassword) {
+          return send(res,400,{error:'Заполните текущий пароль и дважды укажите новый пароль одинаково.'});
+        }
+        if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,128}$/.test(newPassword)) {
+          return send(res,400,{error:'Новый пароль: 8–128 символов, латинские заглавные и строчные буквы и цифра.'});
+        }
+        const credentials=await db.getCustomerCredentials(customerId);
+        if (!credentials) return send(res,404,{error:'Аккаунт не найден.'});
+        const candidate=crypto.scryptSync(currentPassword,credentials.salt,64);
+        const expected=Buffer.from(credentials.passwordHash,'hex');
+        if (candidate.length !== expected.length || !crypto.timingSafeEqual(candidate,expected)) {
+          return send(res,401,{error:'Текущий пароль указан неверно.'});
+        }
+        const salt=crypto.randomBytes(16).toString('hex');
+        const passwordHash=crypto.scryptSync(newPassword,salt,64).toString('hex');
+        await db.updateCustomerPassword(customerId,salt,passwordHash);
+        return send(res,200,{message:'Пароль успешно изменён.'});
+      }
       if (req.method === 'GET' && pathname === '/api/users/me') {
         const customer = await db.getCustomer(customerId);
         return customer ? send(res,200,{customer}) : send(res,404,{error:'Аккаунт не найден.'});

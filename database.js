@@ -169,6 +169,18 @@ async function findCustomerByEmail(email) {
   );
   return result.rows[0] || null;
 }
+async function getCustomerCredentials(id) {
+  const result = await pool.query(
+    'SELECT id,password_salt AS salt,password_hash AS "passwordHash" FROM customers WHERE id=$1',[id]
+  );
+  return result.rows[0] || null;
+}
+async function updateCustomerPassword(id, salt, passwordHash) {
+  const result = await pool.query(
+    'UPDATE customers SET password_salt=$2,password_hash=$3 WHERE id=$1 RETURNING id',[id,salt,passwordHash]
+  );
+  return result.rowCount > 0;
+}
 async function getCustomer(id) {
   const result = await pool.query('SELECT id,full_name AS name,email,phone,created_at AS "createdAt" FROM customers WHERE id=$1',[id]);
   return result.rows[0] || null;
@@ -200,4 +212,4 @@ async function getCatalog() {
   return { restaurants: restaurants.rows, dishes: dishes.rows };
 }
 
-module.exports = { pool, initialize, getCatalog, listCouriers, createCustomer, findCustomerByEmail, getCustomer, getCustomerOrders, getLoginLock, recordLoginFailure, clearLoginFailures, getOrders, getOrder, createOrder, updateStatus, claimOrder };
+module.exports = { pool, initialize, getCatalog, listCouriers, createCustomer, findCustomerByEmail, getCustomerCredentials, updateCustomerPassword, getCustomer, getCustomerOrders, getLoginLock, recordLoginFailure, clearLoginFailures, getOrders, getOrder, createOrder, updateStatus, claimOrder };

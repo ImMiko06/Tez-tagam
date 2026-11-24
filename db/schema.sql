@@ -44,6 +44,9 @@ CREATE TABLE IF NOT EXISTS customers (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE UNIQUE INDEX IF NOT EXISTS customers_email_lower_unique_idx ON customers (LOWER(email));
+CREATE UNIQUE INDEX IF NOT EXISTS customers_phone_digits_unique_idx ON customers (REGEXP_REPLACE(phone, '[^0-9]', '', 'g'));
+
 CREATE TABLE IF NOT EXISTS login_attempts (
   email TEXT PRIMARY KEY,
   attempt_count INTEGER NOT NULL DEFAULT 0,
