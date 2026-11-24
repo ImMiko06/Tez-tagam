@@ -28,3 +28,5 @@ document.querySelector('#account-logout').addEventListener('click',()=>{customer
 restoreCustomer();syncAccountButton();
 
 loadWebsite();
+
+if(new URLSearchParams(location.search).get('account')==='1')document.querySelector('#account-open').click();
